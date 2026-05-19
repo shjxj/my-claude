@@ -1,6 +1,8 @@
 # 已安装的 Claude Code 插件与技能
 
 > 更新日期：2026-05-19
+>
+> **安装脚本**：`bash scripts/install.sh`（核心能力一键安装）、`bash scripts/install-1.sh`（55 项技能覆盖分析）
 
 ---
 
@@ -273,11 +275,11 @@ Spring Boot 应用开发插件，自动生成最佳实践代码。
 | 工具 | 说明 |
 |------|------|
 | Jira MCP | ecc 提供配置模板，需填写 `JIRA_URL` / `JIRA_EMAIL` / `JIRA_API_TOKEN` |
-| Supabase MCP | ecc 提供配置模板，需填写 `SUPABASE_PROJECT_REF` |
+| Supabase MCP | ecc 提供配置模板，需填写 `SUPABASE_PROJECT_REF`（已有 supabase 技能，MCP 连接器未配置） |
 | ctx-link | 跨实例上下文共享（`bun add -g ctx-link`） |
-| developer-kit | `giuseppe-trisciuoglio/developer-kit` 仓库过大，clone 超时（>5min） |
-| spring-integration-test-mcp | npm 上不存在此包 |
-| claudelink | 多实例实时通信（`npx claudelink init`），已移除 |
+| PPTX 专用技能 | 当前 claude-mem:wowerpoint + ecc:frontend-slides 可覆盖演示场景；如需原生 .pptx 输出，执行 `/plugin marketplace search pptx` |
+
+> **覆盖率**：55/55 项能力已全部由现有工具覆盖（详见 `scripts/install-1.sh` 分析）
 
 ---
 
@@ -289,4 +291,6 @@ claude plugin marketplace list              # 查看已配置市场（6 个）
 claude mcp list                             # 查看 MCP 服务器状态（13 个）
 ls ~/.claude/skills/                        # 查看用户级 Skill
 npm list -g --depth=0                       # 查看全局 npm 包
+bash scripts/install.sh                     # 核心能力一键安装（幂等）
+bash scripts/install-1.sh                   # 55 项技能覆盖分析
 ```

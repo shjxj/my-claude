@@ -2,6 +2,8 @@
 
 > 基于当前安装的 10 插件 + 5 Skill + 13 MCP 服务制定的端到端开发流程
 > 更新日期：2026-05-19
+>
+> **55 项技能全覆盖**：运行 \`bash scripts/install-1.sh\` 查看详细覆盖分析，55/55 全部由现有工具覆盖
 
 ---
 
@@ -1494,6 +1496,8 @@ Claude 调用 spring-boot-actuator MCP：
 | `/status` | 会话状态 | `/status` |
 | `/doctor` | 环境健康检查 | `/doctor` |
 | `/tasks` | 后台任务管理 | `/tasks` |
+| `scripts/install.sh` | 核心能力一键安装 | `bash scripts/install.sh` |
+| `scripts/install-1.sh` | 55 项技能覆盖分析 | `bash scripts/install-1.sh` |
 | `/bashes` | 后台命令列表 | `/bashes` |
 
 ---

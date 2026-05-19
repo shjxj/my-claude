@@ -6,38 +6,39 @@
 
 当前工作区根目录为 `/opt/devs/projects/claude`，实际项目代码位于 `gstack/` 子目录。开发 gstack 项目时请先 `cd gstack`，并阅读 `gstack/CLAUDE.md` 了解完整的开发命令、架构和规范。
 
-## 推荐安装的 Claude Code 增强工具
+## 当前已安装能力概览
 
-按优先级排列，覆盖编码规范、代码审查、长期记忆、浏览器自动化、多项目管理等场景。
+| 类别 | 数量 | 详情 |
+|------|------|------|
+| 插件 | 10 个 | superpowers / frontend-design / claude-mem / ecc / java-core / java-spring / java-quality / spring-boot-dev / planning-with-files / ralph-loop |
+| 用户级 Skill | 5 个 | gstack (47 子技能) / find-skills / supabase / supabase-postgres-best-practices / code-simplifier |
+| MCP 服务 | 13 个 | claude-mem / context7×2 / exa / github / playwright / memory / sequential-thinking / db-analyzer / jvm-diagnostics / migration-advisor / spring-boot-actuator / redis-diagnostics |
+| npm 全局包 | 5 个 | code-simplifier / mcp-java-backend-suite / claude-projects / ezvibe / open-claude-remote |
+| 市场源 | 6 个 | claude-plugins-official / thedotmack / ecc / sivalabs-marketplace / java-plugins / planning-with-files |
 
-### 一、前提条件
+完整清单见 `INSTALLED.md`，详细使用手册见 `INSTALLED-INFO.md`，开发方法论见 `develop.md`。
 
-确保已安装 Claude Code 并可正常使用：
-```bash
-claude --version
-```
-
-### 二、核心开发技能（建议全部安装）
-
-#### 1. Superpowers — 标准开发流水线
-强制执行「头脑风暴 → 制定计划 → TDD → 代码审查」的完整开发流程。
+## 安装脚本
 
 ```bash
-# 在 Claude Code 对话中执行
-/plugin install superpowers@claude-plugins-official
+# 一键安装全部核心能力（幂等，可重复运行）
+bash scripts/install.sh
+
+# 55 项技能覆盖分析 + 缺失组件安装
+bash scripts/install-1.sh
 ```
 
-安装后可用的子命令：`/brainstorming`、`/writing-plans`、`/executing-plans`、`/test-driven-development`，代码审查在提交时自动触发。
+## 核心开发技能
 
-#### 2. GStack — 多角色 AI 工程团队
-模拟 CEO、架构师、工程师、设计师、QA、安全官等 23 种角色，用不同视角处理开发任务。
+### 1. Superpowers — 标准开发流水线
+强制执行「头脑风暴 → 制定计划 → TDD → 代码审查」的完整开发流程。**已安装 v5.1.0。**
 
-```bash
-git clone https://github.com/garrytan/gstack.git ~/.claude/skills/gstack
-cd ~/.claude/skills/gstack && ./setup
-```
+可用子命令：`/brainstorming`、`/writing-plans`、`/executing-plans`、`/test-driven-development`、`/systematic-debugging`、`/verification-before-completion`、`/requesting-code-review`、`/receiving-code-review`、`/using-git-worktrees`、`/finishing-a-development-branch`、`/dispatching-parallel-agents`、`/subagent-driven-development`
 
-安装后在 Claude Code 对话中通过斜杠命令调用，例如：
+### 2. GStack — 多角色 AI 工程团队
+模拟 CEO、架构师、工程师、设计师、QA、安全官等 23 种角色，用不同视角处理开发任务。**已安装，47 个子技能。**
+
+常用命令：
 - `/office-hours` — 产品头脑风暴
 - `/plan-ceo-review` — CEO 视角战略审查
 - `/plan-eng-review` — 架构方案审查
@@ -48,177 +49,113 @@ cd ~/.claude/skills/gstack && ./setup
 
 完整技能列表见安装后的 `/help` 输出。
 
-#### 3. Code Review — 多维度自动化审查
-从安全性、逻辑、性能、可维护性等维度审查代码。
+### 3. Everything Claude Code (ecc) — 200+ 技能合集
+综合工程系统，Anthropic 黑客松冠军作品。**已安装 v2.0.0-rc.1。**
 
-Claude Code 已内置代码审查能力（提交时自动触发）。如需第三方增强审查规则：
+覆盖：18 种语言代码审查、13 种语言构建修复、10 种测试框架、多代理并行、25+ 架构模式、安全审计、PR 流水线、前端设计系统、E2E 测试、Hook 管理、性能优化、网络诊断、开源工具链等。
 
-```bash
-mkdir -p ~/.claude/skills/code-review
-# 将审查规则的 SKILL.md 放入该目录
-```
+### 4. Code Review — 多维度自动化审查
+Claude Code 内置 + `ecc:code-review` + `superpowers:requesting-code-review` + `superpowers:receiving-code-review`。从安全性、逻辑、性能、可维护性等维度审查代码。
 
-使用方式：
-```
-请审查最近一次 git 提交的变更
-```
+附加审查能力：`ecc:security-review`、`ecc:silent-failure-hunter`、`ecc:comment-analyzer`、`ecc:type-design-analyzer`
 
-#### 4. Security Guidance — 安全编码助手
-实时检测 SQL 注入、XSS、命令注入等安全风险。该能力已内置于 Claude Code 默认行为中，可在项目 CLAUDE.md 中进一步强化：
+### 5. Security Guidance — 安全编码助手
+实时检测 SQL 注入、XSS、命令注入等安全风险。已内置于 Claude Code + `ecc:security-scan` + `ecc:security-bounty-hunter` + `gstack:cso`（OWASP + STRIDE）。
 
-```markdown
-## 安全约束
-- 所有 SQL 查询必须使用参数化查询
-- 禁止将用户输入拼接到系统命令中
-- 敏感信息（密钥、令牌）禁止写入代码或提交到仓库
-```
+## 长期记忆
 
-### 三、长期记忆
+### 6. claude-mem — 跨会话记忆
+让 Claude Code 记住之前的架构决策、修复过的 bug、项目偏好等，在新会话中自动加载。**已安装 v13.2.0。**
 
-#### 5. claude-mem — 跨会话记忆
-让 Claude Code 记住之前的架构决策、修复过的 bug、项目偏好等，在新会话中自动加载。
+查询历史：`我们之前是怎么解决数据库连接池耗尽问题的？`
 
-```bash
-npx claude-mem install
-```
+## 领域专项技能
 
-安装后自动工作，无需手动调用。查询历史时直接在对话中提问：
-```
-我们之前是怎么解决数据库连接池耗尽问题的？
-```
+### 7. frontend-design — 前端 UI 设计
+支持玻璃态、工业风、极简主义、暗黑模式、新拟态。**已安装。** + `ecc:frontend-design-direction`、`ecc:design-system`、`ecc:liquid-glass-design`、`ecc:motion-*` 族。
 
-### 四、领域专项技能
+### 8. Agent Browser — 浏览器自动化
+控制无头浏览器执行页面导航、点击、填表、截图等操作。**已通过 Playwright MCP（20+ 工具）覆盖。** + `ecc:browser-qa` + `ecc:e2e-runner` + `gstack:browse` + `gstack:qa`
 
-#### 6. frontend-design — 前端 UI 设计
-生成更具美感和多样性的前端 UI 代码，支持玻璃态、工业风等多种设计风格。
+### 9. GitHub 集成
+**已通过 GitHub MCP（25+ 工具）覆盖。** 管理 Issues、PR、搜索仓库、推送文件。
 
-通过 Skill 包或插件市场安装后，在对话中引用：
-```
-@frontend-design 请用玻璃态风格设计一个用户登录表单
-```
+### 10. Supabase
+**已安装** supabase 和 supabase-postgres-best-practices 两个技能。
 
-#### 7. Agent Browser — 浏览器自动化
-控制无头浏览器执行页面导航、点击、填表、截图等操作，用于 E2E 测试和现场验证。
+## Java / Spring Boot 专属
 
-```bash
-# 在 Claude Code 对话中执行
-/plugin install agent-browser
-```
+### 11. java-core — Java 核心工具
+**已安装 v2.2.2。** 14 个技能：项目结构、分层架构、多模块 Maven、设计模式、构建修复、代码规范、日志、异常处理、集合框架、Stream API、并发、序列化、日期时间、I/O。
 
-#### 8. Supabase + GitHub MCP
-- **Supabase**：安全操作 Supabase 的最佳实践，包含 MCP 连接器
-- **GitHub MCP**：让 Claude 管理 Issues、PR、搜索仓库
+代理：`java-architect`（架构设计）、`java-build-resolver`（构建修复）
 
-```bash
-# GitHub MCP 安装（在 Claude Code 对话中执行）
-/plugin install github-mcp
-# 按提示完成 GitHub 账号授权
-```
+### 12. java-spring — Spring Boot 专属
+**已安装 v2.2.2。** 9 个技能：`java-scaffold`、`java-jpa`、`java-logging`、`java-crud`、`java-security`、`java-openapi`、`java-spring-ai`、`java-resilience`、`java-cache`。
 
-Supabase 技能安装：
-```bash
-npx skills add supabase/agent-skills
-```
-仓库: https://github.com/supabase/agent-skills，安装后根据 MCP 指引配置连接。
+代理：`java-spring-expert`
 
-#### 9. Skill Creator — 自定义技能工厂
-通过自然语言描述或示例，为团队创建私有工作流。
+### 13. java-quality — Java 质量保障
+**已安装 v2.2.2。** 3 个代理：`java-security-reviewer`、`java-performance-reviewer`、`java-test-engineer`
 
-在对话中描述需求即可：
-```
-请帮我创建一个 skill，用于自动生成 React 组件的单元测试模板（含边界情况和错误态）
-```
+### 14. spring-boot-dev — Spring Boot 代码生成
+**已安装 v1.0.0。** 5 个技能：包结构创建 → JPA 实体 → Repository → Service → REST Controller
 
-#### 10. Everything Claude Code — 181 技能合集
-包含多代理、安全扫描、持续学习等能力的综合工程系统。Anthropic 黑客松冠军作品，150K+ stars。
+## 流程增强
 
-仓库: https://github.com/affaan-m/everything-claude-code
-安装: `/plugin marketplace add https://github.com/affaan-m/everything-claude-code && /plugin install ecc@ecc`
+### 15. planning-with-files — 持久化规划
+**已安装 v2.38.1。** 通过 `task_plan.md`、`findings.md`、`progress.md` 三个文件在上下文外跟踪任务状态。
 
-### 五、多实例管理与协作
+命令：`/planning-with-files:plan`、`/planning-with-files:start`
 
-#### 11. claude-projects — 项目集中管理
-统一管理多个项目，用简单命令启动后台任务。
+### 16. ralph-loop — 自主迭代循环
+**已安装 v1.0.0。** Stop Hook 拦截退出并重新注入提示词，形成自我反馈循环。
 
-```bash
-npm install -g claude-projects
-```
+命令：`/ralph-loop --max-iterations <n> --completion-promise "<text>"`、`/cancel-ralph`
 
-```bash
-ccode my-app "你的任务" --background
-ccode list   # 查看后台任务状态
-```
+## MCP 诊断服务
 
-#### 12. ClaudeLink — 多实例实时通信
-基于 MCP 的通信枢纽，让多个 Claude Code 实例之间收发消息，适用于前后端协同等场景。
+| MCP Server | 用途 |
+|------------|------|
+| `db-analyzer` | PostgreSQL/MySQL/SQLite schema 分析、索引优化、EXPLAIN 查询计划 |
+| `jvm-diagnostics` | JVM 线程 dump、死锁检测、GC 日志分析、调优建议 |
+| `migration-advisor` | Flyway/Liquibase 迁移风险分析、锁冲突检测、回滚生成 |
+| `spring-boot-actuator` | Health/Metrics/Env/Beans/Caches/Startup 端点诊断 |
+| `redis-diagnostics` | Redis 内存分析、慢日志、客户端连接、Keyspace 健康 |
 
-```bash
-npx claudelink init
-# 重启 Claude Code 生效
-```
+## 多实例管理与协作
 
-#### 13. Agent Teams — 内置子代理系统
-Claude Code 内置的 Subagents 功能，可创建子代理并行执行任务。
+| 工具 | 用途 |
+|------|------|
+| **claude-projects** | 多项目集中管理（`ccode my-app "任务" --background`）|
+| **EZVibe** | Web 可视化管理面板（`ezvibe start`）|
+| **open-claude-remote** | 手机扫码远程监控 Claude Code |
+| **Claude Code 内置** | Subagents 子代理系统、Git Worktree（`claude --worktree`）|
 
-在对话中直接定义子代理：
-```
-创建一个子代理处理后端 API 文档生成，另一个子代理同步更新前端类型定义
-```
-
-#### 14. Git Worktree — 同仓库多分支隔离
-为同一 Git 仓库创建独立工作树，避免多任务间的文件冲突。
-
-```bash
-claude --worktree
-```
-
-#### 15. ctx-link — 跨实例上下文共享
-让多个项目的 Claude 实例（前后端等）共享项目语境。支持本地和云模式（Supabase）。
-
-```bash
-bun add -g ctx-link
-claude mcp add --scope user ctx-link "$(which ctx-link)"
-ctxl setup && ctxl init
-```
-npm: https://www.npmjs.com/package/ctx-link
-
-#### 16. EZVibe — 可视化管理面板
-本地 Web 界面，可视化管理和监控多个 Claude 实例。
-
-```bash
-npm install -g ezvibe
-ezvibe start
-```
-
-#### 17. open-claude-remote — 远程监控
-手机扫码配对，实时监控和控制 PC 终端的 Claude Code。支持 ANSI 色彩、多实例管理、钉钉通知。
-
-```bash
-npm install -g open-claude-remote
-```
-npm: https://www.npmjs.com/package/open-claude-remote
-
-### 六、按场景推荐组合
+## 按场景推荐组合
 
 | 场景 | 推荐组合 |
 |------|---------|
-| 新手入门 | Superpowers + claude-mem |
-| 代码质量保障 | Code Review + Security Guidance + GStack |
-| 前端开发 | frontend-design + Supabase + Agent Browser |
-| 多项目管理 | claude-projects + Git Worktree + ctx-link |
-| 团队协作 | ClaudeLink + Agent Teams + EZVibe |
-| 全面武装 | 全部安装 + Everything Claude Code |
+| 新手入门 | Superpowers + claude-mem + planning-with-files |
+| 代码质量保障 | Superpowers + ecc:code-review + ecc:security-scan + GStack |
+| Java/Spring Boot | java-core + java-spring + java-quality + spring-boot-dev + db-analyzer + jvm-diagnostics |
+| 前端开发 | frontend-design + ecc:frontend-design-direction + Playwright MCP |
+| 多项目管理 | claude-projects + Git Worktree + planning-with-files |
+| 团队协作 | GitHub MCP + ecc:pr + GStack + claude-mem |
+| 全面武装 | 全部 10 插件 + 5 Skill + 13 MCP |
 
-### 七、安装验证
-
-在项目目录中启动 Claude Code，验证技能已生效：
+## 安装验证
 
 ```bash
-cd 你的项目目录
-claude
+claude plugin list                          # 查看已安装插件（10 个）
+claude plugin marketplace list              # 查看已配置市场（6 个）
+claude mcp list                             # 查看 MCP 服务器状态（13 个）
+ls ~/.claude/skills/                        # 查看用户级 Skill
+npm list -g --depth=0                       # 查看全局 npm 包
+bash scripts/install-1.sh                   # 运行 55 项技能覆盖分析
 ```
 
-在对话中输入 `/help` 查看已安装的技能列表，或尝试调用一个斜杠命令确认生效。如果技能未出现，检查：
+在对话中输入 `/help` 查看已安装的技能列表。如果技能未出现，检查：
 1. 技能目录是否存在且路径正确
 2. SKILL.md 文件格式是否正确
 3. 重启 Claude Code 使新技能生效
