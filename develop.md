@@ -1,7 +1,7 @@
 # 开发工作方法论
 
 > 基于当前安装的 10 插件 + 5 Skill + 13 MCP 服务制定的端到端开发流程
-> 更新日期：2026-05-19
+> 更新日期：2026-05-20
 >
 > **55 项技能全覆盖**：运行 \`bash scripts/install-1.sh\` 查看详细覆盖分析，55/55 全部由现有工具覆盖
 
@@ -9,6 +9,10 @@
 
 ## 目录
 
+- [项目配置模板](#项目配置模板)
+- [五大核心能力](#五大核心能力)
+- [分层架构概览](#分层架构概览)
+- [大型项目开发实践](#大型项目开发实践)
 - [总览](#总览)
 - [阶段一：需求与头脑风暴](#阶段一需求与头脑风暴)
 - [阶段二：方案设计与确认](#阶段二方案设计与确认)
@@ -23,6 +27,229 @@
 - [阶段十一：上线后监控](#阶段十一上线后监控)
 - [质量标准与完成定义](#质量标准与完成定义)
 - [命令速查表](#命令速查表)
+
+---
+
+## 项目配置模板
+
+> `scripts/claude/` 提供可直接复制使用的 Claude Code 项目配置模板包，
+> 已纠正常见教程中的配置格式错误。
+
+### 快速开始
+
+```bash
+# 复制完整配置包到你的项目
+cp scripts/claude/claude.md <目标项目>/
+cp scripts/claude/.mcp.json <目标项目>/
+mkdir -p <目标项目>/.claude
+cp scripts/claude/settings.local.json <目标项目>/.claude/
+
+# 复制技术栈技能模板到全局
+cp scripts/claude/skills/*.md ~/.claude/skills/
+```
+
+### Hook 正确配置
+
+常见教程中使用 `onBeforeWriteFile`、`onCommandRun` 等驼峰事件名，并要求写成 JS module.exports 文件——**这些都是错误的**。
+
+**正确的 Hook 配置**（在 `settings.json` 中）：
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [{
+      "matcher": "Edit|Write",
+      "hooks": [{
+        "type": "command",
+        "command": "echo '代码已修改'"
+      }]
+    }],
+    "PreToolUse": [{
+      "matcher": "Bash",
+      "hooks": [{
+        "type": "command",
+        "command": "node ~/.claude/hooks/validate-command.js"
+      }]
+    }]
+  }
+}
+```
+
+**真实事件名**：`PreToolUse`、`PostToolUse`、`UserPromptSubmit`、`SessionStart`、`SessionEnd`、`Stop`、`Notification`、`SubagentStart`、`PreCompact`、`PreMessageEnqueue` 等。
+
+### Agent 正确使用
+
+常见教程中的 `/agent explore/plan/coding` 命令格式不正确。Claude Code 的子代理通过 **`Agent` 工具** + `subagent_type` 参数调用，由对话自然触发：
+
+```
+"梳理整个项目分层架构"  → Agent(subagent_type='Explore')
+"设计模块拆分方案"      → Agent(subagent_type='Plan')
+"审查代码修改"          → Agent(subagent_type='ecc:code-reviewer')
+```
+
+### settings.json 常见错误
+
+| ❌ 错误写法 | ✅ 正确写法 |
+|------------|------------|
+| `"enablePlugins": true` | `"enabledPlugins": { "name@market": true }` |
+| `"enableHooks": true` | `"hooks": { "PostToolUse": [...] }` |
+| `"allowWriteDirs": [...]` | `"permissions": { "allow": [...], "deny": [...] }` |
+| `"hookDir": "~/.claude/hooks"` | 不存在此配置键 |
+| `"agentDir": "~/.claude/agents"` | 不存在此配置键 |
+
+> 完整纠正清单见 `scripts/claude/README.md`
+
+---
+
+## 五大核心能力
+
+Claude Code 通过五种扩展机制接入外部生态，形成完整的开发工具链。
+
+### 能力总览
+
+| 能力 | 作用 | 配置位置 | 典型场景 |
+|------|------|----------|----------|
+| **MCP** | 连接外部服务和 API | `settings.json` → `mcpServers` | 数据库诊断、浏览器自动化、GitHub 操作 |
+| **Hooks** | 生命周期拦截和自动化 | `settings.json` → `hooks` | 代码修改后自动提示审查、高危命令拦截 |
+| **Skills** | 领域技术栈预设规范 | `~/.claude/skills/*.md` | Go 微服务规范、React 组件规范 |
+| **Plugins** | 第三方功能扩展包 | `settings.json` → `enabledPlugins` | superpowers、ecc、java-core 等 |
+| **Agents** | 子代理并行分工 | 对话中自然触发 `Agent` 工具 | Explore 梳理架构、Plan 设计模块、Review 审查代码 |
+
+### MCP — 打通外部系统
+
+```
+对外连接数据库、API、浏览器、文件系统等外部资源
+配置：settings.json → mcpServers → { command + args + env }
+项目级覆盖：.mcp.json（优先级高于全局 settings.json）
+```
+
+当前已接入 13 个 MCP 服务：`db-analyzer`（数据库诊断）、`jvm-diagnostics`（JVM 调优）、`migration-advisor`（迁移审查）、`spring-boot-actuator`（运行健康）、`redis-diagnostics`（Redis 诊断）、`github`（PR/Issue）、`playwright`（浏览器 E2E）、`context7`（实时文档查询）、`claude-mem`（长期记忆）、`memory`（知识图谱）、`sequential-thinking`（多步推理）、`exa`（语义搜索）。
+
+### Hooks — 生命周期自动化
+
+Hooks 监听 Claude Code 运行时的关键事件，自动执行 Shell 命令。**注意**：Hook 是 `settings.json` 中的 Shell 命令，不是 JS 文件 `module.exports`。
+
+**真实事件**：`PreToolUse`、`PostToolUse`、`UserPromptSubmit`、`SessionStart`、`SessionEnd`、`Stop`、`Notification`、`SubagentStart`、`SubagentStop`、`PreCompact`、`PreMessageEnqueue`。
+
+**常用场景**：
+- `PostToolUse` + `matcher: "Edit|Write"` → 代码修改后自动提示质量检查
+- `PreToolUse` + `matcher: "Bash"` → 高危命令执行前拦截
+- `SessionStart` → 会话启动时注入项目上下文
+
+### Skills — 技术栈模板
+
+Skills 是放在 `~/.claude/skills/` 下的 Markdown 文件，通过 `Skill` 工具或斜杠命令调用，为 Claude Code 加载对应技术栈的开发规范。项目级 Skill 同样支持。
+
+### Plugins — 功能扩展
+
+Plugins 从市场源安装，提供成组的 Skills 和 Agents。当前 10 个插件提供 300+ 技能和 50+ 代理。
+
+### Agents — 并行分工
+
+子代理通过 `Agent` 工具调用，由对话自然触发。常见类型：
+- **Explore**：只读检索，梳理架构、分析依赖
+- **Plan**：方案设计、模块拆分
+- **General-purpose**：通用编码实现
+- **各插件 Agent**：code-reviewer、security-reviewer、test-engineer 等
+
+> 完整 Agent 类型列表见 `scripts/claude/agents/README.md`
+
+---
+
+## 分层架构概览
+
+Claude Code 内部可理解为 7 层架构（概念模型，非官方文档）：
+
+| 层 | 职责 | 关键组件 |
+|----|------|----------|
+| **交互层** | 接收输入、流式输出、会话管理 | CLI（Ink 终端引擎）、IDE 集成、Web/桌面 UI |
+| **扩展层** | 标准化扩展接入 | MCP、Hooks、Skills、Plugins |
+| **委托层** | 任务拆分与并行分发 | SubAgent 系统（最多 10 个并行） |
+| **核心引擎层** | 对话循环、Prompt 编排、决策 | QueryEngine（12 步状态机）、System Prompt 管理器 |
+| **安全与工具层** | 工具执行、权限控制、沙箱 | 42+ 内置工具、7 种权限模式、ML 安全分类器 |
+| **状态/上下文层** | 上下文组装、压缩、持久化 | 5 级压缩流水线、会话存储、全局代码索引 |
+| **基础设施层** | 底层支撑 | 网络通信、缓存、日志、认证代理 |
+
+**与大型项目实践的对应关系**：
+
+| 最佳实践 | 对应架构层 |
+|----------|-----------|
+| 限定项目作用域 | 安全与工具层（权限控制） |
+| 统一编码规范 | 核心引擎层（Prompt 编排） |
+| 模块化开发 | 委托层（多 Agent 分工） |
+| 全局代码检索 | 状态层（代码索引）+ 工具层（搜索） |
+| 分批迭代提交 | 核心引擎层 + 状态层 |
+
+---
+
+## 大型项目开发实践
+
+### 十条核心原则
+
+**1. 限定项目作用域**
+对话开始时明确只关注业务相关目录，排除 `node_modules`、`dist`、`logs`、`cache` 等。通过 `CLAUDE.md` 或对话指令设定边界，利用 `settings.local.json` 的 `permissions.deny` 强制限制。
+
+**2. 统一项目编码规范**
+将所有编码规范写入 `CLAUDE.md`（项目级最高优先级）：
+- 命名风格、注释规则、目录分层
+- 异常处理模式、日志规范
+- 接口定义标准、测试要求
+
+**3. 结构化指令编写**
+复杂需求结构化描述：
+```
+任务：<做什么>
+业务目标：<为什么>
+上下文：<涉及的模块/文件/依赖>
+约束：<技术限制、兼容要求、性能指标>
+边界条件：<异常场景、兜底逻辑>
+输出要求：<代码 + 测试 + 文档>
+```
+
+**4. 优先模块化开发**
+大型项目按模块/服务/功能拆分，每次只处理一个模块。多个独立模块可使用并行 Agent 同时开发。
+
+**5. 善用全局代码检索**
+修改前先让 Explore Agent 通读相关代码，复用已有工具类、公共方法、通用接口，避免重复造轮子。
+
+**6. 改动前先做影响分析**
+修改存量代码前，先梳理调用关系、依赖链路，评估修改影响范围。
+
+**7. 强制边界与异常处理**
+要求输出代码自带：
+- 参数校验（入参非空、类型、范围）
+- 异常捕获与传播（不吞异常）
+- 兜底逻辑（超时、降级、重试）
+
+**8. 同步生成配套内容**
+完成功能开发后同步输出：
+- 单元测试（覆盖率 ≥ 80%）
+- 接口文档（请求/响应示例）
+- 修改说明（变更文件清单 + 原因）
+
+**9. 分批迭代提交**
+- 小功能分批编写、自测、提交，不一次性大批量改动
+- 每完成一个逻辑单元就提交一次
+- 降低合并冲突与回滚风险
+
+**10. 老项目重构策略**
+1. Explore Agent 梳理全量旧业务逻辑和调用链路
+2. 保留原有业务行为不变，只优化结构和性能
+3. 按模块逐步重构，每个模块重构后全量回归测试
+4. 通过后再进入下一模块
+
+### 项目级配置最小模板
+
+```bash
+# 必须的 3 个文件
+项目根目录/
+├── CLAUDE.md           # 编码规范 + 项目信息
+├── .mcp.json           # MCP 外部服务（如需要）
+└── .claude/
+    └── settings.local.json  # 权限白名单
+```
+
+> 完整模板见 `scripts/claude/`
 
 ---
 

@@ -1,0 +1,20 @@
+{
+  "_说明": ".mcp.json 用于项目级 MCP 服务配置，放置于项目根目录。优先级高于全局 ~/.claude/settings.json 中的 mcpServers。",
+  "_安全提示": "敏感信息（数据库密码、API Key）使用环境变量 ${VAR_NAME} 引用，不要硬编码。",
+
+  "mcpServers": {
+    "database": {
+      "command": "npx",
+      "args": ["-y", "mcp-db-analyzer", "--driver", "postgresql"],
+      "env": {
+        "DATABASE_URL": "${DATABASE_URL}"
+      }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-filesystem", "./"]
+    }
+  },
+
+  "timeout": 30000
+}

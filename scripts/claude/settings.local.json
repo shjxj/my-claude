@@ -1,0 +1,26 @@
+{
+  "_说明": "此文件覆盖全局 settings.json 的权限配置。放置于项目 .claude/ 目录。",
+  "permissions": {
+    "allow": [
+      "Bash(npm test)",
+      "Bash(npm run *)",
+      "Bash(git *)",
+      "Bash(go build *)",
+      "Bash(go test *)",
+      "Bash(mvn *)",
+      "Bash(python *)",
+      "Bash(node *)",
+      "WebSearch",
+      "WebFetch"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(sudo *)",
+      "Bash(chmod 777 *)",
+      "Bash(curl * | sh)",
+      "Bash(wget * | bash)",
+      "Bash(> /dev/sda)"
+    ]
+  },
+  "_安全建议": "生产环境建议使用 defaultMode: 'acceptEdits' 或 'default' 而非 'bypassPermissions'"
+}

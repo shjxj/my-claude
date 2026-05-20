@@ -159,3 +159,26 @@ bash scripts/install-1.sh                   # 运行 55 项技能覆盖分析
 1. 技能目录是否存在且路径正确
 2. SKILL.md 文件格式是否正确
 3. 重启 Claude Code 使新技能生效
+
+## 配置模板包
+
+`scripts/claude/` 目录提供可复用的 Claude Code 项目配置模板，可直接复制到目标项目使用：
+
+| 模板文件 | 用途 | 说明 |
+|----------|------|------|
+| `claude.md` | 项目行为规范模板 | 含编码规范、操作约束、输出格式 |
+| `.mcp.json` | 项目级 MCP 配置 | 数据库、文件系统等外部服务连接 |
+| `settings.local.json` | 权限白名单模板 | 使用真实 `permissions.allow/deny` 格式 |
+| `skills/*.md` | 技术栈技能模板 | Go 微服务、Java Spring Boot、React/Vue3 TS、Python FastAPI |
+| `hooks/README.md` | Hook 正确配置指南 | 纠正真实事件名（PreToolUse 非 onBeforeWriteFile）和 Shell 命令配置方式 |
+| `agents/README.md` | Agent 正确使用指南 | 纠正调用方式（Agent 工具 非 /agent 命令） |
+| `memory/memory.md` | 项目长期记忆模板 | 含 frontmatter 格式的项目信息/编码约定/迭代规则 |
+
+### 关键纠正
+
+常见教程中的以下写法**不正确**：
+- ❌ `enablePlugins: true` → ✅ `enabledPlugins: { "name@market": true }`（对象格式）
+- ❌ Hook 事件 `onBeforeWriteFile` → ✅ `PreToolUse`, `PostToolUse`, `SessionStart` 等
+- ❌ Hook 是 JS module.exports → ✅ 是 settings.json 中的 Shell 命令 `type: "command"`
+- ❌ `/agent explore 需求` → ✅ 使用 `Agent` 工具 + `subagent_type` 参数
+- ❌ 目录 `~/.claude/agents/`、`~/.claude/plugins-config/` → ✅ 实际不存在
