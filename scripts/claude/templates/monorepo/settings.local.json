@@ -1,0 +1,46 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn:*)",
+      "Bash(java:*)",
+      "Bash(pnpm:*)",
+      "Bash(npm:*)",
+      "Bash(node:*)",
+      "Bash(npx:*)",
+      "Bash(flutter:*)",
+      "Bash(dart:*)",
+      "Bash(git:*)",
+      "Bash(docker:*)",
+      "Bash(docker-compose:*)",
+      "Bash(mysql:*)",
+      "Bash(redis-cli:*)",
+      "Bash(kubectl:get*)",
+      "Bash(kubectl:logs*)",
+      "Bash(kubectl:describe*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(touch:*)",
+      "Bash(echo:*)",
+      "Bash(date:*)",
+      "Bash(which:*)",
+      "Bash(pod:*)",
+      "Bash(xcodebuild:*)"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(sudo:*)",
+      "Bash(chmod 777:*)",
+      "Bash(kubectl:delete*)",
+      "Bash(kubectl:apply*)",
+      "Bash(docker:rm*)",
+      "Bash(docker:prune*)",
+      "Bash(mysql:*DROP*)",
+      "Bash(mysql:*TRUNCATE*)",
+      "Bash(curl * | sh:*)"
+    ]
+  }
+}
