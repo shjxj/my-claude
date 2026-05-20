@@ -1,0 +1,58 @@
+## 会话日志规范
+
+> 本章节由 session-logging 模板包提供。Hook 自动捕获 Skill/Agent 执行结果，
+> 以下规则指导 AI 在阶段之间主动维护计划文件。
+
+### 日志文件结构
+
+```
+docs/
+├── sessions/{date}/               # Hook 自动创建，按日期分目录
+│   ├── 01-brainstorming.md        # 头脑风暴/需求
+│   ├── 02-strategy.md             # CEO/战略审查
+│   ├── 03-architecture.md         # 架构设计
+│   ├── 04-plan.md                 # 实施计划
+│   ├── 05-tdd.md                  # TDD 实现
+│   ├── 06-review.md               # 代码审查
+│   ├── 07-verification.md         # 验证
+│   ├── 08-security.md             # 安全审计
+│   ├── 10-session-log.md          # 未分类记录
+│   └── _index.md + _summary.md   # 索引与会话摘要
+├── adr/                            # 架构决策记录
+└── bugs/active.md                 # Bug 追踪
+```
+
+### 阶段衔接规则（强制执行）
+
+1. **规划完成后**：检查 `task_plan.md` 中每个任务是否可独立追踪
+2. **每完成一个 TDD 任务**：
+   - 在 `task_plan.md` 中将对应任务标记为 `[x]`
+   - 在 `progress.md` 末尾追加 `[日期 时间] 完成任务：<任务名>`
+3. **代码审查完成后**：将发现的问题追加到 `findings.md`
+4. **安全扫描发现漏洞时**：写入 `findings.md`，严重问题标 `**严重**`
+5. **验证通过后**：在 `progress.md` 追加 `[日期 时间] 验证通过`
+6. **验证失败时**：回写 `task_plan.md`，将失败任务标记为需返工
+7. **产生重大技术决策时**：写入 `docs/adr/{编号}-{标题}.md`，编号自增
+
+### 架构决策记录（ADR）
+
+当以下情况发生时，必须在 `docs/adr/` 下创建 ADR：
+
+- 选择 A 技术而非 B 技术
+- 引入新的架构模式
+- 修改模块边界或依赖关系
+- 性能优化中的关键取舍
+
+ADR 格式见 `docs/adr/_template.md`。
+
+### Bug 追踪
+
+发现 bug 时写入 `docs/bugs/active.md`，包含：现象描述、影响范围、根因分析（已知或待查）、关联的 task_plan 任务。修复后标记为 `~~已修复~~`。
+
+### 会话开始时的行为
+
+每次新会话启动时：
+1. 读取 `docs/sessions/{最近日期}/_summary.md` 了解上次进度
+2. 读取 `task_plan.md` 和 `progress.md` 确定当前状态
+3. 检查 `docs/bugs/active.md` 有无未处理问题
+4. 在 `docs/sessions/{今天日期}/_index.md` 追加会话开始标记
