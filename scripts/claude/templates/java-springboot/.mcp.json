@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "db-analyzer": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "mcp-db-analyzer"],
+      "env": {
+        "DB_TYPE": "mysql",
+        "DB_HOST": "127.0.0.1",
+        "DB_PORT": "3306",
+        "DB_USER": "root",
+        "DB_PASSWORD": "${MYSQL_PASSWORD}",
+        "DB_NAME": "your_database"
+      }
+    },
+    "redis-diagnostics": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "mcp-redis-diagnostics"],
+      "env": {
+        "REDIS_HOST": "127.0.0.1",
+        "REDIS_PORT": "6379",
+        "REDIS_PASSWORD": "${REDIS_PASSWORD}"
+      }
+    },
+    "migration-advisor": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "mcp-migration-advisor"]
+    }
+  }
+}

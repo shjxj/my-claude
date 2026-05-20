@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn:*)",
+      "Bash(java:*)",
+      "Bash(docker:*)",
+      "Bash(docker-compose:*)",
+      "Bash(git:*)",
+      "Bash(mysql:*)",
+      "Bash(redis-cli:*)",
+      "Bash(kubectl:get*)",
+      "Bash(kubectl:logs*)",
+      "Bash(kubectl:describe*)"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(kubectl:delete*)",
+      "Bash(kubectl:apply*)",
+      "Bash(docker:rm*)",
+      "Bash(docker:prune*)",
+      "Bash(mysql:*DROP*)",
+      "Bash(mysql:*TRUNCATE*)"
+    ]
+  }
+}
