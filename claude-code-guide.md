@@ -256,6 +256,43 @@ MCP（Model Context Protocol）连接外部服务。项目级配置在 `.mcp.jso
 | spring-boot-actuator | 运行时健康检查、指标分析 |
 | redis-diagnostics | Redis 内存、慢日志、连接分析 |
 
+### 2.8 配置模板包
+
+项目 `scripts/claude/` 提供可复用的配置模板，可直接复制到目标项目使用：
+
+| 模板 | 用途 |
+|------|------|
+| `scripts/claude/claude.md` | 项目行为规范模板（通用） |
+| `scripts/claude/settings.local.json` | 权限白名单模板（真实格式） |
+| `scripts/claude/.mcp.json` | 项目级 MCP 配置模板 |
+| `scripts/claude/skills/*.md` | 5 套技术栈规范（Go/Java/React/Vue3/Python） |
+| `scripts/claude/hooks/README.md` | Hook 正确配置指南 |
+| `scripts/claude/agents/README.md` | Agent 正确使用指南 |
+| `scripts/claude/memory/memory.md` | 长期记忆模板 |
+
+**分场景模板**（`scripts/claude/templates/`）：
+
+| 模板目录 | 适用场景 |
+|----------|---------|
+| `global` | 通用项目基础配置 |
+| `java-springboot` | Java Spring Boot 项目 |
+| `react-umi` | React + Umi 项目 |
+| `monorepo` | 大型 monorepo 项目 |
+| `session-logging` | 会话日志系统（含 Hook 路由脚本） |
+| `docs-config` | 文档型配置项目 |
+| `flutter-pos` | Flutter 项目 |
+| `wechat-miniprogram` | 微信小程序项目 |
+
+```bash
+# 快速部署到目标项目
+cp scripts/claude/claude.md <目标项目>/
+cp scripts/claude/settings.local.json <目标项目>/.claude/
+cp scripts/claude/.mcp.json <目标项目>/
+
+# 按场景使用模板
+cp scripts/claude/templates/java-springboot/CLAUDE.md <目标项目>/
+```
+
 ---
 
 ## 三、实战技巧

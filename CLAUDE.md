@@ -13,8 +13,7 @@ Claude Code 配置与文档管理中心。不是可运行应用 — 无构建、
 
 ```bash
 # 运行安装脚本（幂等，可重复执行）
-bash scripts/install.sh        # 18 项核心能力一键安装
-bash scripts/install-1.sh      # 55 项技能覆盖分析 + 缺失组件安装
+bash scripts/install.sh        # 核心能力一键安装 + 升级
 
 # 验证安装状态
 claude plugin list              # 已安装插件列表
@@ -38,8 +37,7 @@ cp scripts/claude/.mcp.json <目标项目>/
 ├── INSTALLED.md / INSTALLED-INFO.md  # 已安装能力清单 + 使用手册
 ├── develop.md                 # 开发方法论
 ├── scripts/
-│   ├── install.sh             # 一键安装（18 项，幂等）
-│   ├── install-1.sh           # 55 项覆盖分析
+│   ├── install.sh             # 一键安装 + 升级（幂等）
 │   └── claude/                # 可复用配置模板包
 │       ├── claude.md          # 通用项目行为规范模板
 │       ├── settings.local.json  # 权限白名单模板（真实格式）

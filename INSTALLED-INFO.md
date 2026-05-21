@@ -2,7 +2,7 @@
 
 > 更新日期：2026-05-19 | 涵盖 Claude Code 核心能力、所有 CLI 命令、内置斜杠命令、已安装插件（10个）与技能、MCP 服务（13个）的详细中文说明
 >
-> **相关文件**：`INSTALLED.md`（插件清单）、`develop.md`（开发方法论）、`scripts/install.sh`（一键安装）、`scripts/install-1.sh`（55 项技能覆盖分析）
+> **相关文件**：`INSTALLED.md`（插件清单）、`develop.md`（开发方法论）、`scripts/install.sh`（一键安装 + 升级）
 
 ---
 

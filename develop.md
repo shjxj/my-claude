@@ -1,9 +1,9 @@
 # 开发工作方法论
 
-> 基于当前安装的 10 插件 + 5 Skill + 13 MCP 服务制定的端到端开发流程
-> 更新日期：2026-05-20
+> 基于当前安装的 10 插件 + 7 Skill + 13 MCP 服务制定的端到端开发流程
+> 更新日期：2026-05-21
 >
-> **55 项技能全覆盖**：运行 \`bash scripts/install-1.sh\` 查看详细覆盖分析，55/55 全部由现有工具覆盖
+> **22 项能力全覆盖**：运行 \`bash scripts/install.sh\` 一键安装/升级全部能力
 
 ---
 
@@ -98,6 +98,90 @@ cp scripts/claude/skills/*.md ~/.claude/skills/
 | `"agentDir": "~/.claude/agents"` | 不存在此配置键 |
 
 > 完整纠正清单见 `scripts/claude/README.md`
+
+---
+
+## 会话日志系统 — 开发全流程自动记录
+
+### 概述
+
+通过 PostToolUse Hook 自动拦截 Skill/Agent 调用 + CLAUDE.md 指令驱动 AI 主动维护，实现「头脑风暴 → 计划 → TDD → 审查 → 验证」全流程的自动记录。
+
+**两层分工：**
+
+| 层 | 机制 | 职责 |
+|----|------|------|
+| Hook 层 | `PostToolUse` 自动拦截 | 捕获 Skill/Agent 执行结果，按路由表写入日志文件 |
+| AI 层 | `CLAUDE.md` 指令驱动 | 更新 task_plan/findings/progress，写入 ADR，记录 bug |
+
+### 文件结构
+
+```
+项目根目录/
+├── docs/
+│   ├── sessions/{日期}/            # Hook 自动创建
+│   │   ├── _index.md               # 当日命令执行索引
+│   │   ├── 01-brainstorming.md     # 头脑风暴/需求
+│   │   ├── 02-strategy.md          # CEO/战略审查
+│   │   ├── 03-architecture.md      # 架构设计
+│   │   ├── 04-plan.md              # 实施计划
+│   │   ├── 05-tdd.md               # TDD 实现
+│   │   ├── 06-review.md            # 代码审查
+│   │   ├── 07-verification.md      # 验证
+│   │   ├── 08-security.md          # 安全审计
+│   │   ├── 09-loop.md              # 自主循环
+│   │   ├── 10-session-log.md       # 未分类记录（兜底）
+│   │   └── _summary.md             # 会话摘要（Stop hook）
+│   ├── adr/                         # 架构决策记录
+│   └── bugs/active.md              # Bug 追踪
+├── task_plan.md / findings.md / progress.md  # planning-with-files 管理
+├── .claude/
+│   ├── settings.local.json          # Hook 配置
+│   └── hooks/session-logger.sh      # 路由脚本
+```
+
+### 路由规则
+
+| 命令 | 目标文件 |
+|------|---------|
+| `/brainstorming` `/office-hours` | `01-brainstorming.md` |
+| `/plan-ceo-review` | `02-strategy.md` |
+| `/plan-eng-review` `/plan-design-review` | `03-architecture.md` |
+| `/writing-plans` `/planning-with-files:plan` | `04-plan.md` |
+| `/test-driven-development` `/executing-plans` | `05-tdd.md` |
+| `/code-review` `/requesting-code-review` `/receiving-code-review` | `06-review.md` |
+| `/verification-before-completion` | `07-verification.md` |
+| `/security-review` `/security-scan` | `08-security.md` |
+| `/ralph-loop` | `09-loop.md` |
+| 其他未匹配的 Skill/Agent | `10-session-log.md` |
+| 会话结束（Stop hook） | `_summary.md` |
+
+### AI 阶段衔接规则
+
+在目标项目 CLAUDE.md 中写入以下规则，AI 在阶段衔接时自动执行：
+
+1. **规划完成后**：确保 `task_plan.md` 每个任务可独立追踪
+2. **TDD 每完成一个任务**：标记 `task_plan.md` 为 `[x]`，在 `progress.md` 末尾追加进度
+3. **代码审查完成后**：问题写入 `findings.md`
+4. **验证完成后**：更新 `progress.md` 最终状态
+5. **产生重大技术决策时**：写入 `docs/adr/{编号}-{标题}.md`
+6. **发现 bug 时**：写入 `docs/bugs/active.md`
+7. **会话开始时**：读取最近日期的 `_summary.md` + `task_plan.md` + `progress.md`
+
+### 快速部署
+
+```bash
+# 模板位置：scripts/claude/templates/session-logging/
+cp templates/session-logging/settings.local.json <目标项目>/.claude/
+cp -r templates/session-logging/hooks/ <目标项目>/.claude/
+chmod +x <目标项目>/.claude/hooks/session-logger.sh
+cat templates/session-logging/CLAUDE.md.snippet >> <目标项目>/CLAUDE.md
+cp templates/session-logging/adr/_template.md <目标项目>/docs/adr/
+cp templates/session-logging/bugs/active.md <目标项目>/docs/bugs/
+mkdir -p <目标项目>/docs/{sessions,adr,bugs,releases}
+```
+
+> 完整使用说明见 `scripts/claude/templates/session-logging/README.md`
 
 ---
 
@@ -1723,8 +1807,7 @@ Claude 调用 spring-boot-actuator MCP：
 | `/status` | 会话状态 | `/status` |
 | `/doctor` | 环境健康检查 | `/doctor` |
 | `/tasks` | 后台任务管理 | `/tasks` |
-| `scripts/install.sh` | 核心能力一键安装 | `bash scripts/install.sh` |
-| `scripts/install-1.sh` | 55 项技能覆盖分析 | `bash scripts/install-1.sh` |
+| `scripts/install.sh` | 核心能力一键安装 + 升级 | `bash scripts/install.sh` |
 | `/bashes` | 后台命令列表 | `/bashes` |
 
 ---

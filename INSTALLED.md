@@ -1,8 +1,8 @@
 # 已安装的 Claude Code 插件与技能
 
-> 更新日期：2026-05-19
+> 更新日期：2026-05-21
 >
-> **安装脚本**：`bash scripts/install.sh`（核心能力一键安装）、`bash scripts/install-1.sh`（55 项技能覆盖分析）
+> **安装脚本**：`bash scripts/install.sh`（核心能力一键安装 + 升级，幂等可重复运行）
 
 ---
 
@@ -190,7 +190,7 @@ Spring Boot 应用开发插件，自动生成最佳实践代码。
 
 ---
 
-## 二、用户级 Skill（~/.claude/skills/，5 个）
+## 二、用户级 Skill（~/.claude/skills/，7 个）
 
 | 技能 | 路径 | 状态 | 用途 |
 |------|------|------|------|
@@ -199,8 +199,8 @@ Spring Boot 应用开发插件，自动生成最佳实践代码。
 | **supabase** | `~/.claude/skills/supabase/` | ✅ | Supabase 平台操作（含 assets/、references/） |
 | **supabase-postgres-best-practices** | `~/.claude/skills/supabase-postgres-best-practices/` | ✅ | PG 最佳实践（连接池、RLS、分页、锁等） |
 | **code-simplifier** | `~/.claude/skills/code-simplifier/` | ✅ | 代码简化与质量检查（由 @adonis0123/code-simplifier 提供） |
-
-> `~/.claude/skills/learned/` 为空目录，被某插件自动创建，不提供可用技能。
+| **ui-ux-pro-max** | `~/.claude/skills/ui-ux-pro-max/` | ✅ | UI/UX 设计增强（前端设计、组件库、交互优化） |
+| **learned** | `~/.claude/skills/learned/` | ⚪ | 空目录，由 claude-mem 插件自动创建 |
 
 ### GStack 子技能一览（47 个）
 
@@ -279,7 +279,7 @@ Spring Boot 应用开发插件，自动生成最佳实践代码。
 | ctx-link | 跨实例上下文共享（`bun add -g ctx-link`） |
 | PPTX 专用技能 | 当前 claude-mem:wowerpoint + ecc:frontend-slides 可覆盖演示场景；如需原生 .pptx 输出，执行 `/plugin marketplace search pptx` |
 
-> **覆盖率**：55/55 项能力已全部由现有工具覆盖（详见 `scripts/install-1.sh` 分析）
+> **覆盖率**：22/22 项能力已全部由现有工具覆盖（详见 `scripts/install.sh` 安装输出）
 
 ---
 
@@ -291,6 +291,5 @@ claude plugin marketplace list              # 查看已配置市场（6 个）
 claude mcp list                             # 查看 MCP 服务器状态（13 个）
 ls ~/.claude/skills/                        # 查看用户级 Skill
 npm list -g --depth=0                       # 查看全局 npm 包
-bash scripts/install.sh                     # 核心能力一键安装（幂等）
-bash scripts/install-1.sh                   # 55 项技能覆盖分析
+bash scripts/install.sh                     # 核心能力一键安装 + 升级（幂等）
 ```

@@ -16,8 +16,7 @@
 ├── develop.md                   # 方法论
 ├── claude-code-guide.md         # 指南
 ├── scripts/
-│   ├── install.sh               # 一键安装
-│   ├── install-1.sh             # 覆盖分析+补装
+│   ├── install.sh               # 一键安装 + 升级
 │   └── claude/                  # 可复用模板包
 │       ├── claude.md            # 通用模板
 │       ├── .mcp.json            # MCP 模板
@@ -42,7 +41,6 @@
 ```bash
 # 运行安装脚本（幂等）
 bash scripts/install.sh
-bash scripts/install-1.sh
 
 # 验证安装
 claude plugin list

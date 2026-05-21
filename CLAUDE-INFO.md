@@ -11,7 +11,7 @@
 | 类别 | 数量 | 详情 |
 |------|------|------|
 | 插件 | 10 个 | superpowers / frontend-design / claude-mem / ecc / java-core / java-spring / java-quality / spring-boot-dev / planning-with-files / ralph-loop |
-| 用户级 Skill | 5 个 | gstack (47 子技能) / find-skills / supabase / supabase-postgres-best-practices / code-simplifier |
+| 用户级 Skill | 7 个 | gstack (47 子技能) / find-skills / supabase / supabase-postgres-best-practices / code-simplifier / ui-ux-pro-max / learned |
 | MCP 服务 | 13 个 | claude-mem / context7×2 / exa / github / playwright / memory / sequential-thinking / db-analyzer / jvm-diagnostics / migration-advisor / spring-boot-actuator / redis-diagnostics |
 | npm 全局包 | 5 个 | code-simplifier / mcp-java-backend-suite / claude-projects / ezvibe / open-claude-remote |
 | 市场源 | 6 个 | claude-plugins-official / thedotmack / ecc / sivalabs-marketplace / java-plugins / planning-with-files |
@@ -21,11 +21,11 @@
 ## 安装脚本
 
 ```bash
-# 一键安装全部核心能力（幂等，可重复运行）
+# 一键安装全部核心能力（幂等，可重复运行，含安装 + 升级）
 bash scripts/install.sh
 
-# 55 项技能覆盖分析 + 缺失组件安装
-bash scripts/install-1.sh
+# 仅检查/升级已安装组件
+bash scripts/install.sh --upgrade
 ```
 
 ## 核心开发技能
@@ -142,7 +142,7 @@ Claude Code 内置 + `ecc:code-review` + `superpowers:requesting-code-review` + 
 | 前端开发 | frontend-design + ecc:frontend-design-direction + Playwright MCP |
 | 多项目管理 | claude-projects + Git Worktree + planning-with-files |
 | 团队协作 | GitHub MCP + ecc:pr + GStack + claude-mem |
-| 全面武装 | 全部 10 插件 + 5 Skill + 13 MCP |
+| 全面武装 | 全部 10 插件 + 7 Skill + 13 MCP |
 
 ## 安装验证
 
@@ -152,7 +152,7 @@ claude plugin marketplace list              # 查看已配置市场（6 个）
 claude mcp list                             # 查看 MCP 服务器状态（13 个）
 ls ~/.claude/skills/                        # 查看用户级 Skill
 npm list -g --depth=0                       # 查看全局 npm 包
-bash scripts/install-1.sh                   # 运行 55 项技能覆盖分析
+bash scripts/install.sh                     # 一键安装（含安装 + 升级）
 ```
 
 在对话中输入 `/help` 查看已安装的技能列表。如果技能未出现，检查：
