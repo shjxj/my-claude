@@ -170,7 +170,7 @@ pnpm test -- --run           # 单次
 - ❌ Server Component 中用 `useState`/`useEffect` → 不会报错但无效
 - ❌ 整页标记 `'use client'` → 把交互部分拆成小 Client Component
 - ❌ `useEffect` 做数据获取 → 用 Server Component 或 TanStack Query
-- ❌ 忘记 `priorty`/`sizes` 属性的 `<Image>` → 用 `next/image` 必须设置
+- ❌ 忘记 `priority`/`sizes` 属性的 `<Image>` → 用 `next/image` 必须设置
 - ❌ `auth()` 在 Client Component 中调用 → 用 `useSession()`
 - ❌ `revalidatePath` 放在 try-catch 外面 → revalidate 只应在操作成功后执行
 - ❌ 硬编码 API 地址 → 用环境变量 `NEXT_PUBLIC_*` + `process.env.*`

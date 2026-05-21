@@ -46,7 +46,26 @@ cp scripts/claude/settings.local.json <目标项目>/.claude/
 
 # 复制技术栈技能模板到全局
 cp scripts/claude/skills/*.md ~/.claude/skills/
+
+# 按场景使用分场景模板（10 套）
+cp scripts/claude/templates/java-springboot/CLAUDE.md <目标项目>/
+cp scripts/claude/templates/typescript-vite-react/CLAUDE.md <目标项目>/
 ```
+
+**分场景模板**（`scripts/claude/templates/`，10 套）：
+
+| 模板目录 | 适用场景 |
+|----------|---------|
+| `global` | 通用项目基础配置 |
+| `java-springboot` | Java Spring Boot 项目 |
+| `react-umi` | React + Umi 项目 |
+| `typescript-vite-react` | TypeScript + Vite + React SPA 项目 |
+| `typescript-nextjs-react` | TypeScript + Next.js + React 全栈项目 |
+| `monorepo` | 大型 monorepo 项目 |
+| `session-logging` | 会话日志系统（含 Hook 路由脚本） |
+| `docs-config` | 文档型配置项目 |
+| `flutter-pos` | Flutter 项目 |
+| `wechat-miniprogram` | 微信小程序项目 |
 
 ### Hook 正确配置
 
