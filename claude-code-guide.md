@@ -277,6 +277,8 @@ MCP（Model Context Protocol）连接外部服务。项目级配置在 `.mcp.jso
 | `global` | 通用项目基础配置 |
 | `java-springboot` | Java Spring Boot 项目 |
 | `react-umi` | React + Umi 项目 |
+| `typescript-vite-react` | TypeScript + Vite + React SPA 项目 |
+| `typescript-nextjs-react` | TypeScript + Next.js + React 全栈项目 |
 | `monorepo` | 大型 monorepo 项目 |
 | `session-logging` | 会话日志系统（含 Hook 路由脚本） |
 | `docs-config` | 文档型配置项目 |
